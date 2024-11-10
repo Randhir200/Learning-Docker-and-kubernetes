@@ -1,12 +1,12 @@
-name: CI/CD for Backend
+name: Node.js CI/CD
 
 on:
   push:
     branches:
-      - main    # Trigger the workflow on pushes to the main branch
+      - main    # Trigger workflow on pushes to main branch
   pull_request:
     branches:
-      - main    # Trigger the workflow on pull requests to the main branch
+      - main    # Trigger on pull requests to main
 
 jobs:
   build-and-deploy:
@@ -21,27 +21,20 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'  # Specify the Node.js version
+          node-version: '16'  # Specify Node.js version
 
       # Step 3: Install Dependencies
       - name: Install Dependencies
-        working-directory: ./backend
         run: npm install
 
       # Step 4: Run Tests
       - name: Run Tests
-        working-directory: ./backend
         run: npm test
 
-      # Step 5: Build the App (if needed)
-      - name: Build Application
-        working-directory: ./backend
-        run: npm run build  # Adjust if your build command is different
-
-      # Step 6: Deploy to Production (Optional)
-      - name: Deploy
+      # Step 5: Start Server (Optional for Deployment)
+      - name: Start Server
         if: github.ref == 'refs/heads/main'
-        working-directory: ./backend
         run: |
-          # Your deployment command here, for example:
-          # npm run deploy
+          node server.js &
+        env:
+          NODE_ENV: production
