@@ -1,0 +1,47 @@
+name: CI/CD for Backend
+
+on:
+  push:
+    branches:
+      - main    # Trigger the workflow on pushes to the main branch
+  pull_request:
+    branches:
+      - main    # Trigger the workflow on pull requests to the main branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the code
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'  # Specify the Node.js version
+
+      # Step 3: Install Dependencies
+      - name: Install Dependencies
+        working-directory: ./backend
+        run: npm install
+
+      # Step 4: Run Tests
+      - name: Run Tests
+        working-directory: ./backend
+        run: npm test
+
+      # Step 5: Build the App (if needed)
+      - name: Build Application
+        working-directory: ./backend
+        run: npm run build  # Adjust if your build command is different
+
+      # Step 6: Deploy to Production (Optional)
+      - name: Deploy
+        if: github.ref == 'refs/heads/main'
+        working-directory: ./backend
+        run: |
+          # Your deployment command here, for example:
+          # npm run deploy
