@@ -3,10 +3,10 @@ name: Node.js CI/CD
 on:
   push:
     branches:
-      - main    # Trigger workflow on pushes to main branch
+      - main    # Trigger workflow on pushes to the main branch
   pull_request:
     branches:
-      - main    # Trigger on pull requests to main
+      - main    # Trigger on pull requests to the main branch
 
 jobs:
   build-and-deploy:
@@ -31,8 +31,25 @@ jobs:
       - name: Run Tests
         run: npm test
 
-      # Step 5: Start Server (Optional for Deployment)
-      - name: Start Server
+      # Step 5: Build Docker image
+      - name: Build Docker Image
+        run: |
+          docker build -t my-node-app .
+        
+      # Step 6: Run Docker container (Optional for local testing, can be skipped for cloud deployment)
+      - name: Run Docker Container
+        run: |
+          docker run -d -p 3000:3000 my-node-app
+        env:
+          NODE_ENV: production
+
+      # Step 7: Stop Docker container (optional, just for cleanup)
+      - name: Stop Docker Container
+        run: |
+          docker stop $(docker ps -q)
+          
+      # Step 8: Start Server (Optional for Deployment)
+      - name: Start Server (Optional)
         if: github.ref == 'refs/heads/main'
         run: |
           node server.js &
